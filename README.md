@@ -1,13 +1,24 @@
-#Java podstawy
+# Java podstawy
 
-## Przykladowy header
+## 2. Środowisko programistyczne Javy
 
-Przydatne metody:
+### Kompilacja i uruchamianie programów
 
-`Arrays.sort() ` - sortuje tablicę
 
-```java
-public static void main(String... args){
-    System.out.println("Test")
-}
+```
+javac Welcome.java
+java Welcome
+```
+
+## 3. Podstawowe elementy języka Java
+
+### 3.3 Typy danych
+
+```
+
+int     4 bajty     -2mld - 2mld
+short   2 bajty     -32768 - 32767
+long    8 bajtów    
+byte    1 bajt      -128 - 127
+
 ```
