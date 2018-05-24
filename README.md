@@ -501,5 +501,155 @@ Stream<Person> stream = names.stream().map(x->new Person(x));
 
 ### 6.3.7 Interfejsy funkcjonalne
 
+* mogą posiadać metody defaultowe i statyczne
+
 ![alt konwersja](images/interfejsy_funkcjonalne.png)
 ![alt konwersja](images/interfejsy_funkcjonalne2.png)
+
+## 6.4. Klasy wewnętrzne
+
+####  klasyczna klasa wewnętrzna
+
+* klasa Inner posiada dostęp do pól klasy Outer
+* klasa Inner nie może istnieć poza obiektem Outer
+* klasa wewnętrzna ma dostęp do stanu obiektu zewnętrznego jeśli nie jest statyczna
+* statyczną klasę wewnętrzną można utworzyć nawet jeśli nie istnieje obiekt klasy zewnętrznej
+* tylko statyczna klasa wewnętrzna może zawierać statyczne metody i pola
+ 
+```java
+    class Outer {        
+        class Inner {
+        }
+    }
+    
+    //Tworzenie instancji klasy Inner
+    Outer out = new Outer();
+    Outer.Inner in = out.new Inner();
+```
+####  klasa zdefiniowane wewnątrz meotdy
+* nie uzywa modyfikatorów public / private
+* ma dostęp do zmiennych lokalnych (var)
+* zmienne lokalne używane w tej klasie muszą być finalne lub efektywnie finalne, ale można to obejśc przekazując 1 elementową tablicę
+
+```java
+    class Outer {
+
+        public void method1(){
+            int var = 1;
+            
+            class Inner {
+        
+            }
+        }
+    }
+```
+
+#### anonimowe klasy wewnętrzne
+
+```java
+    class Outer {
+
+        public void method1(){
+            
+            Comparable cmp = new Comparable() {
+                @Override
+                public int compareTo(Object o) {
+                    return 0;
+                }
+            };
+        }
+    } 
+```
+
+Można utworzyć klasę i od razu użyć jej metod w bloku inicjalizacyjnym:
+```java
+new ArrayList<String>() {{ add("Henryk"); add("Tomasz"); }}
+```
+
+# 7. Wyjątki, asercje i dzienniki
+
+![alt konwersja](images/wyjatki.png)
+
+*  Error odpowiadają błędom wewnętrznym i wyczerpaniu zasobów w środowisku uruchomieniowym
+*  RuntimeException są powodowane przez błędy programisty np:
+    * niepoprawne rzutowanie,
+    * dostęp do nieistniejącego elementu tablicy,
+    * dostęp do pustego wskaźnika
+
+Error i RuntimeException to wyjątki niekontrolowane - nie wymagają przechwytywania.
+Wyjątków Error nie powinno się samemu wyrzucać
+
+### 7.2.1. Przechwytywanie wyjątkow
+
+```java
+        try{
+            // cos tu może wyrzucić wyjątek
+        }catch(IOException e){
+        }
+
+        // Przechwytywanie kilku wyjątków
+
+        try{
+            // cos tu może wyrzucić wyjątek
+        }catch(IOException e){
+
+        }catch (EOFException e){
+
+        }
+
+        // Przechwytywanie kilku wyjąktów w jednych catch
+        try{
+            // Rzucza 2 różne wyjątki
+        }catch(IOException | EOFException ex){
+            //ex nie można zmienić referencji = ex jest finalne w tym przypadku
+        }
+
+        // Klauzura finally
+        try{
+
+        }catch(Exception ex){
+
+        }finally {
+            // wykona się bez względu czy w try wystąpi wyjątek czy nie
+        }
+
+        // Try z zasobami
+        try(Resource res = new Resource()){
+            // Resource musi implementować AutoCloseable
+            // Błędy wyrzucone przez AutoCloseable.close są tłumione
+        }catch(Exception ex){
+        }
+
+```
+
+## 7.4. Asercje
+
+* wyrzucają AssertionException jeśli się nie powiodą
+* są usuwane z kodu finalnego
+* aby działały należy uruchmić vm z parametrem -ea lub -enableassertions: `java -enableassertions MyApp`
+
+```java
+public void method1(int arg){
+    assert arg > 0 : "arg should be greater than 0";
+}
+```
+
+
+## 7.5. Dzienniki / Logi
+
+* hierarchia ma znaczenie poniewaz pozwala ustawiac poziom logowania dla nizszych w hierarchii logerow
+
+
+```java
+private static final Logger myLogger = Logger.getLogger("com.mycompany.myapp");
+
+myLogger.setLevel(Level.FINE);
+```
+Aby zobaczyć jakie klasy są ładowane przy uruchomieniu programu: `java -verbose`
+Aby zobaczyć statyczną analize kodu: `javac -Xlint`
+
+Aby śledzić zużycie zasobów przez program: `jconsole IDprocesu`
+
+`-Xprof` - najczesciej używane metody i które zostały skompilowane przez JIT
+
+# Programowanie generyczne

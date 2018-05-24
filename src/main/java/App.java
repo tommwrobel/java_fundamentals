@@ -1,3 +1,5 @@
+import java.io.EOFException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,28 +18,45 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-        String[] arr = {"a"};
-
-        Arrays.sort(arr, String::compareTo);
-        Arrays.sort(arr, (a,b) -> a.compareTo(b));
-
-
-        class A {
-            public void print() {
-                System.out.println("A");
-            }
+        try{
+            // cos tu może wyrzucić wyjątek
+        }catch(IOException e){
         }
 
-        class B extends A {
-            public void print() {
-                System.out.println("B");
-            }
+        // Przechwytywanie kilku wyjątków
+
+        try{
+            // cos tu może wyrzucić wyjątek
+        }catch(IOException e){
+
+        }catch (EOFException e){
+
         }
 
-        A[] arr = {new A(), new B()};
+        // Przechwytywanie kilku wyjąktów w jednych catch
+        try{
+            // Rzucza 2 różne wyjątki
+        }catch(IOException | EOFException ex){
+            //ex nie można zmienić referencji = ex jest finalne w tym przypadku
+        }
 
-        arr[0].print(); // prints A
-        arr[1].print(); // prints B
+        // Klauzura finally
+        try{
+
+        }catch(Exception ex){
+
+        }finally {
+            // wykona się bez względu czy w try wystąpi wyjątek czy nie
+        }
+
+        // Try z zasobami
+        try(Resource res = new Resource()){
+            // Resource musi implementować AutoCloseable
+            // Błędy wyrzucone przez AutoCloseable.close są tłumione
+        }catch(Exception ex){
+        }
+
+
 
     }
 
@@ -45,4 +64,20 @@ public class App {
     protected void finalize() throws Throwable {
         super.finalize();
     }
+
+
+    class Outer {
+
+        public void method1(){
+
+            Comparable cmp = new Comparable() {
+                @Override
+                public int compareTo(Object o) {
+                    return 0;
+                }
+            };
+        }
+    }
 }
+
+
