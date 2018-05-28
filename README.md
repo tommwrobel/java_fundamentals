@@ -1,31 +1,41 @@
 # Java podstawy
 
-## 2. Środowisko programistyczne Javy
+# 2. Środowisko programistyczne Javy
 
-### Kompilacja i uruchamianie programów
-
+## 2.2. Używanie narzędzi wiersza poleceń
 
 ```
-javac Welcome.java
-java Welcome
+javac Welcome.java // kompilacja plików - utowrzy plik Welcome.class
+java Welcome // uruchomienie maszyny wirtualnej i wykonanie kodu bajtowego z pliku Welcome.class
 ```
 
-## 3. Podstawowe elementy języka Java
+
+# 3. Podstawowe elementy języka Java
 
 ### 3.3 Typy danych
 
-```
+Liczby można zapisywać używając separatora _ np 1_000 //java 7+
 
-int     4 bajty     -2mld - 2mld
-short   2 bajty     -32768 - 32767
-long    8 bajtów    
+Typy całkowite
+```
 byte    1 bajt      -128 - 127
-float   4 bajty     około ±3,40282347E+38F (6 – 7 znaczących cyfr dziesiętnych)
-double  8 bajtów    około ±1,79769313486231570E+308 (15 znaczących cyfr dziesiętnych)
+short   2 bajty     -32768 - 32767
+int     4 bajty     -2mld - 2mld
+long    8 bajtów    –9 223 372 036 854 775 808 do 9 223 372 036 854 775 807
+
+float   4 bajty     ok ±3,40282347E+38F (6 – 7 znaczących cyfr dziesiętnych) 
+double  8 bajtów    ok ±1,79769313486231570E+308 (15 znaczących cyfr dziesiętnych) 
 ```
 
 ```
-char - można zapisywać jako kody unicode w zakresie od \u0000 do \uFFFF
+char - (UTF-16) pojedyńczy znak można zapisywać w kodzie 16-nastkowym w zakresie od \u0000 do \uFFFF 
+```
+
+```
+Systemy liczb i zapis:
+szestnastkowy: 0x..
+ósemkowy: 0..
+dwójkowy: 0b.. / 0B... //java 7+
 ```
 
 #### 3.5.2 Konwersja typów numerycznych
@@ -34,6 +44,44 @@ Strzałki przerywane - konwersja mogąca powodować utratę danych
 
 ![alt konwersja](images/konwersja.png)
 
+#### 3.5.5. Operatory inkrementacji i dekrementacji
+
+* ++x - wartość x obliczana jest przed obliczeniem wyrażenia w którym występuje
+* x++ - wartość x obliczona jest po obliczeniu wyrażenia w którym występuje
+
+```java
+int m = 7;
+int n = 7;
+int a = 2 * ++m; // a ma wartość 16, a m — 8
+int b = 2 * n++; // b ma wartość 14, a n — 8
+```
+
+#### 3.5.7. Operatory bitowe
+
+Operatory bitowe to:
+
+* & bitowa koniunkcja 
+* | bitowa alternatywa 
+* ^ lub wykluczające 
+* ~ bitowa negacja
+* >> przesunięcie bitowe w prawo
+* <<
+
+Przykłady:
+```java
+// Bitowa koniunkcja
+int x = (n & 8) / 8; // x = 1 jeśli 4 bit zmiennej n = 1
+
+(1010 & 1000) - suma logiczna = 1000 = 8 dziesiętnie
+
+// Przesunięcie bitów w praco
+
+7>>1 // 3
+
+0111 >> 1 = 0011 
+
+
+```
 
 #### 3.5.9 Typ wyliczeniowy Enum
 
@@ -67,7 +115,12 @@ enum Size {
 ### Lańcuchy
 
 * Są niemodyfikowalne (immutable)
-* Dwa te same łańcuchy mogą być w rzeczywistości jednym w pamięci
+* Dwa te same łańcuchy mogą być w rzeczywistości jednym w pamięci (tylko stałe łancuchowe, powstałe w wyniku operacji już nie)
+* składają się z szeregu znaków Unicode.
+
+```java
+char a = "afls".charAt(1); // należy uważać ponieważ pobrany znak może być zapisany w 2 jednostkach kodowych UTF-16
+```
 
 
 Przydatne metody
@@ -77,6 +130,16 @@ int compareTo(String other) //Zwraca wartość ujemną, jeśli łańcuch znajduj
 
 String join("delimiter", CharSequence... elements) //Zwraca nowy łańcuch będący połączeniem wszystkich elementów za pomocą określonego znaku.
 
+```
+
+#### 3.6.9. Składanie łańcuchów
+
+Za każdym razem, gdy łączone są znaki, tworzony jest nowy obiekt klasy String.
+
+```java
+StringBuilder sb = new StringBuilder();
+sb.append("aa");
+String completedString = builder.toString();
 ```
 
 ### 3.7.1. Odbieranie danych wejściowych
@@ -94,22 +157,46 @@ String username = cons.readLine("Nazwa użytkownika: ");
 char[] passwd = cons.readPassword("Hasło: ");
 ```
 
+3.7.2. Formatowanie danych wyjściowych
+
+```java
+System.out.printf("%d - liczba całkowita dziesiętna", 10); // 10
+System.out.printf("%x - liczba całkowita szesnastkowa", 159); // 9f
+System.out.printf("%o - liczba całkowita ósemkowa", 159); // 237
+System.out.printf("%f - liczba zmiennoprzecinkowa", 1.1); // 1.1
+System.out.printf("%e - liczba zmiennoprzecinkowa w notacji wykładniczej", 159); // 1.59e+01
+System.out.printf("%s - łańcóch", "aa"); // aa
+System.out.printf("%c - znak", 'h'); // h
+System.out.printf("%b - wartość logiczna", true); // true
+System.out.printf("%h - wartośc skrótu", 'h'); // 68
+
+Dodatkowo można modyfikować wygląd formatowanych danych znakami specjalnymi:
+
+![alt konwersja](images/znaki.png)
+
+
+Aby utoworzyć ale nie drukować napisu należy użyć metody `Strinf.format("%d", 10)`
+
+```
+
 ### 3.7.3. Zapis i odczyt plików
 
 ```java
 //Czytanie zawartości pliku
-Scanner in = new Scanner(Paths.get("mojplik.txt"));
+Scanner in = new Scanner(Paths.get("mojplik.txt"),"UTF-8");
 
 // Zapis do pliku
-PrintWriter out = new PrintWriter("file.txt");
+     try(PrintWriter pn = new PrintWriter("aample.txt")){
+            pn.print("Jakis napis");
+        }catch (IOException ex){
+            ex.printStackTrace();
+        }
 ```
 
 ### 3.8.5. Wybór wielokierunkowy — instrukcja switch
 
 Etykiety case mogą być:
-* wyrażeniami stałymi typu char, byte, short lub int;
-* stałymi wyliczeniowymi;
-* literałami łańcuchowymi od Java SE 7
+* char, byte, short, int, enum, String (od Java 7);
 
 ## 3.9. Wielkie liczby 
 
