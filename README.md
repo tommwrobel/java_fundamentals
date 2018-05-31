@@ -213,13 +213,17 @@ BigDecimal bd = BigDecimal.valueOf(23.34);
 * Można deklarować tablice postrzępione
 
 ```java
+// Dwa sposoby na inicjalizację tablicy
 int[] smallPrimes = { 2, 3, 5, 7, 11, 13 };
+int[] smallPrimes = new int[]{ 2, 3, 5, 7, 11, 13 };
 
 //Kopiowanie tablicy
 int[] sm2 = Arrays.copyOf(smallPrimes, smallPrimse.length);
 
 //Sortowanie
 Arrays.sort(sm2);
+
+Array.sort(arr, Comparator) - tylko dla obiektów
 
 //Konwersja na piekny string
 String arr = Arrays.toString(sm2);
@@ -241,6 +245,13 @@ int[][] magicSquare =
 
 //Konwersja na piekny string
 String arr = Arrays.deepToString(magicSquare);
+
+//Iteracja za pomocą pętli foreach
+for(int item : arr){
+    System.out.println(item);
+}
+
+// Można deklarować tablicze postrzępione w javie
 ```
 
 # 4. Obiekty i klasy
@@ -250,6 +261,7 @@ String arr = Arrays.deepToString(magicSquare);
 ### 4.2.2. Klasa LocalDate
 
 * immutable ( w przeciwieństwie do Date )
+* posiada dużo przydatnych metod jak możliwość dodawania dni itp do daty
 
 ```java
 LocalDate date = LocalDate.now();
