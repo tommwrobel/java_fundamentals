@@ -292,7 +292,7 @@ Statyczna metoda używana do tworzenie instancji obiektu
 
 ## 4.5. Parametry metod
  
- W Javie zawsze stosowane są wywołania przez wartość. W przypadku obiektów przekazywana nie jest referencja ale kopia referencji.
+ W Javie zawsze stosowane są wywołania przez wartość. W przypadku obiektów przekazywana jest kopia referencji do obiektu.
  
  * Metoda nie może zmodyfikować parametru typu podstawowego (czyli będącego
  liczbą lub wartością logiczną).
@@ -303,8 +303,11 @@ Statyczna metoda używana do tworzenie instancji obiektu
 ## 4.6.2. Domyślna inicjalizacja pól
 
 Pola w przeciwieństwie do zmiennych lokalnych są inicjalizowane domyślnymi wartościami - nie nalezy na tym polegać!
- 
- 
+
+## 4.6.3. Konstruktor bezargumentowy
+
+ Jest defaultowo dostępny, chyba że klasa posiada jaki kolwiek inny konstruktor.
+
 ## 4.6.6. Wywoływanie innego konstruktora
  
  ```java
@@ -317,9 +320,16 @@ public Employee(double s)
 ```
 
 ## 4.6.7. Bloki inicjalizujące
-* Wykonywany przed konsturkorem
+* Wykonywany przed konstruktorem
 * Wykonywane w kolejności w jakiej są zadeklarowane
 * Statyczny blok wykonywany przy pierwszym załadowaniu klasy
+
+Kolejność:
+1 Statyczny blok rodzica
+2 Statyczny blok dziecka
+3 Blok rodzica
+4 Blok dziecka
+5 Konstruktor
 
 ```java
 class Employee
@@ -362,10 +372,14 @@ class Employee
 
 ## 4.7. Pakiety
 * Kompilator nie rozpoznaje żadnych powiązań pomiędzy pakietami i podpakietami
-* Kompilacja nei wymaga aby klasy były w katalogach odpowiadająch pakietom, ale uruchomienia programu już tak
+* Kompilacja nie wymaga aby klasy były w katalogach odpowiadająch pakietom, ale uruchomienia programu już tak
 
 ### 4.7.4. Zasięg pakietów
 * W JDK 1.2 wprowadzono zmiany w mechanizmie ładującym klasy (ang. class loader), aby jawnie zabraniał ładowania klas użytkownika, których pakiety mają nazwy zaczynające się od słowa java..
+
+### 4.9.7. Generowanie dokumentacji
+
+javadoc -d <targetDirectory> *.java
 
 ## 4.8. Ścieżka klas 
 Miejsca w których będą szukane klasy wymagane do uruchomienia programu
@@ -752,3 +766,170 @@ Aby śledzić zużycie zasobów przez program: `jconsole IDprocesu`
 `-Xprof` - najczesciej używane metody i które zostały skompilowane przez JIT
 
 # Programowanie generyczne
+
+# Kolekcje
+
+### Interfejs Iterator
+
+```java
+public interface Iterator<E>
+{
+    E next(); // throws NoSuchElementException (<-RuntimeException)
+    boolean hasNext();
+    void remove(); // Może być użyte tylko po next(); Usuwa element zwrócony przez next();
+    default void forEachRemaining(Consumer<? super E> action);
+}
+```
+
+Każda kolekcja impolmentująca interfejs Iterable może być użyta w pętli foreach
+
+```java
+for(E item : Iterable c){
+}
+```
+
+### Interfejs Iterable
+
+```java
+public interface Iterable<E>
+{
+    Iterator<E> iterator();
+    //...
+}
+```
+
+### Interfejs Collection
+
+```java
+public interface Collection<E> extends Iterable<E>
+{
+    boolean add(E element);
+    Iterator<E> iterator();
+    //. . .
+}
+```
+
+AbstractCollection implementuje wszystkie metody interfejsu Collection w kategorii metod. size i iterator pozostały abstrakcyjne
+
+### Interfejsy kolekcji
+
+![alt konwersja](images/interfejsy_kolekcji.png)
+
+Lista to kolekcja uporządkowana
+Dostęp przez index to dostęp swobodny
+
+### Interfejs ListIterator
+
+Dziedziczy po Iterator i posiada kilka dodatkowych metod związanych z dostępem swobodnym
+
+9.2 Konkretne klasy kolekcyjne
+
+![alt konwersja](images/konkretne_kolekcje_1.png)
+![alt konwersja](images/konkretne_kolekcje_2.png)
+![alt konwersja](images/konkretne_kolekcje_3.png)
+![alt konwersja](images/konkretne_kolekcje_4.png)
+
+
+Tablice i listy tablicowe mają jedną poważną wadę — usuwanie elementów z ich środka jest mało efektywne, ponieważ czynność ta wymaga przesunięcia wszystkich elementów znajdujących się za tym usuwanym w stronę początku
+
+### 9.2.3. Zbiór HashSet
+
+Jak przechowywane są elementy:
+Pozycja elementu A w HashSet/HashMap (M) to : A.hashCode % M.size
+Loadfactor (ok 0.75) - jeśli ilość elementów przekroczy tą wartość to rozmiar kolekcji się zwiększa
+Elementy z tym samym hash code porównywane są przez equals przy wstawianiu i przechowywane na tej samem poozycji za pomocą linked listy
+
+* brak zachowanej kolejności
+
+### 9.2.4. Zbiór TreeSet
+
+* Kolejność elementów zachowana
+* Trochę wolniejsza od HashSet
+* Implementuje klasę SortedSet
+* Elementy muszą implementować interfejs Comparable
+
+### 9.2.5. Kolejki Queue i Deque
+
+* queue - dodawanie elementów na końcu i pobieranie z początku
+* dequeue - dodawanie i pobieranie elementów z obu stron (ArrayDeque, LinkedList)
+
+### 9.2.6. Kolejki priorytetowe
+
+* Przyjmują elementy w losowej kolejności i oddawaniu ich w kolejności uporządkowanej.
+* Realizowana często za pomocą sterty (heap)
+* może przechowywać elementy klasy implementującej interfejs Comparable
+* metoda remove usuwa najmniejszy element
+* iterator nie odwiedza elementów w uporządkowanej kolejności jak w TreeSet
+
+```java
+PriorityQueue<GregorianCalendar> pq = new PriorityQueue<>();
+```
+
+### 9.3. Słowniki
+
+* podstawowe implementacje: HashMap i TreeMap
+* elementy w TreeMap muszę implementować Comparable lub kolekcja musi zostać utworona z komparatorem
+
+### 9.3.3. Widoki słowników
+
+* widok to obiekt implementujący Collection lub pochodne tego interfejsu
+```java
+Set<K> keySet()
+Collection<V> values()
+Set<Map.Entry<K, V>> entrySet()
+```
+* z widoków można usuwać elementy, ale nie można dodawać. Operacja usunięcia będzie odzworowana w mapie
+
+### 9.3.4. Klasa WeakHashMap
+* GC usuwa wpisy, jeśli jedyna referencja do klucza wpisu jest w samej mapie. Tzw weak reference
+
+### 9.3.5. Klasy LinkedHashSet i LinkedHashMap
+* pamiętają kolejnoś wstawiania do kolekcji elementów
+* elementy posiadają referencje do innych elementów, ale w samej mapie i secie znajdują się w "losowej" kolejności
+* można nadpisać motodę boolean removeEldestEntry tak żeby usuwała automatycznie najstarszy wpis przy wstawianiu nowego
+
+### 9.3.6. Klasy EnumSet i EnumMap
+
+* EnumSet prosta i wydajna kolekcja do przechowywania enumów
+```java
+enum Weekday { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY };
+EnumSet<Weekday> always = EnumSet.allOf(Weekday.class);
+EnumSet<Weekday> never = EnumSet.noneOf(Weekday.class);
+EnumSet<Weekday> workday = EnumSet.range(Weekday.MONDAY, Weekday.FRIDAY);
+EnumSet<Weekday> mwf = EnumSet.of(Weekday.MONDAY, Weekday.WEDNESDAY, Weekday.FRIDAY);
+```
+
+* EnumMap - klucze są typu enum. Typ nalezy określić w konstruktorze
+```java
+EnumMap<Weekday, Employee> personInCharge = new EnumMap<Weekday, Employee>(Weekday.class);
+```
+
+### 9.3.7. Klasa IdentityHashMap
+
+Wartości haszowe
+kluczy nie powinny być w niej obliczane przez metodę hashCode, ale przez System.
+identityHashCode. Metody tej używa metoda Object.hashCode do obliczania skrótu z adresu
+obiektu w pamięci. Ponadto klasa ta porównuje obiekty za pomocą operatora == zamiast
+metody equals.
+
+## 9.4. Widoki i opakowania
+
+Kolekcja zwraca inną kolekcję ktorej metody operują na elementach oryginalnej kolekcji
+
+### 9.4.1. Lekkie obiekty opakowujące kolekcje
+* Arrays.asList tworzy opakowanie na tablicę. Nie  można usuwać i dodawać do niej elementów!
+* lista obiektów nie jest duplikowana - oszczędność
+* zmiany w tablicy są odwzorowane w widoku
+```java
+List<String> names = Arrays.asList("Ania", "Bartek", "Karol");
+```
+
+### 9.4.2. Przedziały
+
+```java
+List group2 = staff.subList(10, 20);
+```
+
+* operacje na przdziałach są widoczne w oryginalnej kolekcji - np clear() wyczyści przedział i usunie te elementy z oryginalnej kolekcji
+
+### 9.4.3. Widoki niemodyfikowalne

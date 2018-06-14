@@ -16,12 +16,4 @@ public class Tablice {
     }
 }
 
-class Dog {
-    private String name;
 
-    public static Dog withName(String name){
-        Dog dog = new Dog();
-        dog.name = name;
-        return dog;
-    }
-}
