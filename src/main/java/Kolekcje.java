@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -6,5 +7,7 @@ public class Kolekcje {
         Map<String,String> map = new HashMap<>();
 
         map.entrySet();
+
+
     }
 }

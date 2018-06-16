@@ -933,3 +933,114 @@ List group2 = staff.subList(10, 20);
 * operacje na przdziałach są widoczne w oryginalnej kolekcji - np clear() wyczyści przedział i usunie te elementy z oryginalnej kolekcji
 
 ### 9.4.3. Widoki niemodyfikowalne
+
+* Proba modywifkowania tej kolekcji wyrzuca wyjątek
+* używją metody equals oryginalnej kolekcji w celu porównywania jej
+
+```java
+Collections.unmodifiableCollection
+Collections.unmodifiableList
+Collections.unmodifiableSet
+Collections.unmodifiableSortedSet
+Collections.unmodifiableNavigableSet
+```
+
+### 9.4.4. Widoki synchronizowane
+
+* metody modyfikujące i dostępowe są synchronizowane w tych widokach
+
+```java
+Map<String, Employee> map = Collections.synchronizedMap(new HashMap<String, Employee>());
+```
+
+### 9.4.5. Widoki kontrolowane
+* Uniemożliwia przemycanie do kolekcji elemntów niezgodnych z generycznym typem
+
+```java
+ArrayList<String> strings = new ArrayList<>();
+ArrayList rawList = strings; // Zostanie zgłoszone tylko ostrzeżenie (nie błąd) dotyczące
+// zgodności ze starszym kodem.
+rawList.add(new Date()); // Teraz referencja strings wskazuje na obiekt typu Date!
+```
+* Próba dodania innego elementu niż string zakończy się wyrzuceniem wyjątku ClassCastException
+
+```java
+List<String> safeStrings = Collections.checkedList(strings, String.class);
+```
+
+### 9.5. Algorytmy
+
+* Sorotwanie: `Collections.sort(Collection, <Comparator>)
+* Tasowanie: `Collections.shuffle()`
+* Największy element: `Collections.max(Collection, <Comparator>)`
+
+Przykłady
+```java
+staff.sort(Comparator.reverseOrder())
+staff.sort(Comparator.comparingDouble(Employee::getSalary).reversed())
+```
+
+### 9.5.2. Wyszukiwanie binarne
+
+* Działa na posortowanych zbiorach
+* Porównuje wyszukiwany element ze znajdującym się w połowie zbioru, dzieląc go w ten sposób na 2 a następnie robi to samo z podzbiorami aż do znalezienie elementu
+
+```java
+index = Collections.binarySearch(collection, element);
+index = Collections.binarySearch(collection , element, comparator);
+
+result.retainAll(b); // zwraca wspólne elementy zbioru result i b
+```
+
+### 9.5.5. Konwersja pomiędzy kolekcjami a tablicami
+
+Tablica > Kolekcja
+* zmiany w tablicy widoczne w kolekcji
+
+```java
+String[] elements;
+List<String> list = Arrays.asList(elements);
+```
+
+Kolekcja > Tablica
+
+```java
+List<String> list;
+Object[] arr1 = list.toArray(); //Nie można rzutować tego na String[]!
+
+String[] arr2 = list.toArray(new String[0]);
+String[] arr3 = list.toArray(new String[list.size()]);
+```
+
+## 9.6. Stare kolekcje
+
+![alt konwersja](images/stare_kolekcje.png)
+
+### 9.6.1. Klasa Hashtable
+
+* Odpowiednik HashMap
+* Metody synchronizowane
+
+### 9.6.2. Wyliczenia - Enumeration
+
+* Odpowiednik Iterator
+* metody: hasNextElement, nextElement
+* Collections.enumeration(col) - zwrace Enumerator kolekcji col
+
+### 9.6.3. Słowniki własności
+
+* Klucze i wartości są łańcuchami.
+* Tablicę tę można zapisać w pliku i załadować z pliku.
+* Posiada dodatkową tablicę z wartościami domyślnymi.
+* implementacja: Properties
+
+```java
+        Properties prop = new Properties();
+        //properties_example.txt
+        //property1=hoho
+        prop.load(new FileInputStream(new File("properties_example.txt")));
+        System.out.println(prop.getProperty("property1"));
+```
+
+9.6.5. Zbiory bitów
+//TODO

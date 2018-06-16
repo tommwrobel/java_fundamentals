@@ -1,0 +1,3 @@
+property1=22
+property2=kamil
+property3=34 kamil

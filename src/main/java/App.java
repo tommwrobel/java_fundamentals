@@ -1,3 +1,6 @@
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -32,10 +35,26 @@ public class App {
 
         System.out.println(list);
 
-
+        Properties prop = new Properties();
+        //properties_example.txt
+        //property1=hoho
+        prop.load(new FileInputStream(new File("properties_example.txt")));
+        System.out.println(prop.getProperty("property1"));
     }
 
 
 }
+
+abstract class A<E>{
+    public abstract E getName();
+}
+
+class B extends A<Integer> {
+    @Override
+    public Integer getName(){
+        return 1;
+    }
+}
+
 
 
