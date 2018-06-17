@@ -1,12 +1,10 @@
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.prefs.Preferences;
 
@@ -30,36 +28,27 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        Integer[] arr = {1, 2, 3};
+        Thread t1 = new Thread(()->{
+            throw new ArrayIndexOutOfBoundsException("hehe");
+        });
 
-        List<Integer> list = Arrays.asList(arr);
+        t1.start();
 
-        arr[0] = 44;
+        t1.setUncaughtExceptionHandler((t, e) -> {
 
-        System.out.println(list);
+        });
 
-        Properties prop = new Properties();
-        //properties_example.txt
-        //property1=hoho
-        prop.load(new FileInputStream(new File("properties_example.txt")));
-        System.out.println(prop.getProperty("property1"));
 
-        URL resource = App.class.getResource("Tablice.class");
+        ReentrantLock myLock = new ReentrantLock();
+        myLock.lock();
 
-        System.out.println(resource.getContent());
+        try {
+            // sekcja krytyczna
+        }
+        finally {
+            myLock.unlock(); // Zapewnienie, że blokada zostanie zdjęta, nawet jeśli wystąpi wyjątek.
+        }
 
-        System.out.println(System.getProperty("user.home"));
-
-        Preferences node = Preferences.userNodeForPackage(App.class);
-
-//        node.putInt("Name",44);
-//        node.put("Zupa","dupa");
-
-        System.out.println(Arrays.toString(node.keys()));
-
-        System.out.println(node.getInt("Name",55));
-
-        node.exportNode(new FileOutputStream("backup.xml"));
     }
 
 

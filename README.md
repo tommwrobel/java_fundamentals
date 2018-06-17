@@ -1230,4 +1230,92 @@ Preferences.importPreferences(InputStream in);
  node.exportNode(new FileOutputStream("backup.xml"));
  ```
  
-# Współbierzeność 
+# 14 Współbierzeność 
+
+### 14.1. Czym są wątki
+
+```java
+new Thread(new Runnable(){
+    @Override
+    public void run(){
+        //Kod wykonywany w nowym wątku
+    }
+}).start();
+```
+
+### 14.2. Przerywanie wątków
+
+* Wątek działa do momentu kiedy:
+  * Po wykonaniu się metody run lub urzycia w niej return
+  * Zostanie w niej wyrzucony nieprzechwycony wyjątek
+  
+Przerwać wątek można wywołując metodę `interrupt()`. To czy wątek zostanie przerwany zależy tylko od niego `interrupt` = prośba. 
+Wyjątek może sprawdzać czy został przerwany: `Thread.currentThread().isInterrupted()`
+Jeśli wątek jest zablokowany przez `sleep` lub 'wait' to zostaje wyrzucony wyjątek `InterruptedException`
+`interrupted()` sprawdza czy bierzący wątek jest przerwany i zeruje jego status na false.
+
+### 14.3. Stany wątków
+
+* **NEW** <br>
+    Utworzony za pomocą `new Thread()`
+    
+* **RUNNABLE**<br>
+    Stan po wykonaniu metody `start()`. Nie oznacza, że wątek jest uruchomiony - to zależy od tego czy system przyznał czas procesora
+* **BLOCKED i WAITING**<br>
+    Po wywołaniu metod `Object.wait, Thread.join, Lock.tryLock i Condition.wait.`, lub kiedy wątek próbuje założyć blokadę na obiekt
+
+* **TERMINATED**<br>
+
+![alt konwersja](images/stany_watku.png)
+
+`Thread.State getState()` - stan wątku: NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED.
+
+### 14.4. Własności wątków
+
+  #### 14.4.1. Priorytety wątków
+
+  * Domyślnie dziedziczony po rodzicu
+  * Ustawiany metodą setPriority(int 1-10)
+  * Nie w każdym systemie działają tak samo - mogą być ingnorowane!
+  * `yield()` ustępuje innym wątkom o takim samym lub wyższym priorytecie
+
+  #### 14.4.2. Wątki demony
+  
+  * Służy innym wątkom
+  * Nie powinien mieć dostępu do zasobów stałych jak pliki czy baza danych
+  * Wątek w demona zmeinia się za pomocą matody `setDaemon(true)`
+  * JVM kończy działanie kiedy zostaje tylko wątek demon
+
+  #### 14.4.3. Procedury obsługi nieprzechwyconych wyjątków
+  //TODO
+ 
+
+### 14.5. Synchronizacja
+
+   * Kiedy 2+ wątki chcą dostać się do jednego obiektu to nazywa się race condition
+
+  #### 14.5.3. Obiekty klasy Lock
+
+   * należy uważać aby unlock() zostało zawsze wykonane - inaczej zablokuje to na zawsze inne wątki
+   * wątek może wywołać dowolną ilość razy lock() ale żeby odblokować blokadę musi wywołać tyle samo unlock()
+  
+   ```java
+     ReentrantLock myLock = new ReentrantLock();
+     myLock.lock();
+
+     try {
+         // sekcja krytyczna
+     }
+     finally {
+         myLock.unlock(); // Zapewnienie, że blokada zostanie zdjęta, nawet jeśli wystąpi wyjątek.
+     }
+   ```
+   
+   #### 14.5.4. Warunki
+
+### 14.6. Kolejki blokujące
+### 14.7. Kolekcje bezpieczne wątkowo
+### 14.8. Interfejsy Callable i Future
+### 14.9. Klasa Executors
+### 14.10. Synchronizatory
+### 14.11. Wątki a biblioteka Swing
