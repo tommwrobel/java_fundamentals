@@ -1044,3 +1044,123 @@ String[] arr3 = list.toArray(new String[list.size()]);
 
 9.6.5. Zbiory bitów
 //TODO
+
+# 13. Przygotowywanie apletów i aplikacji do użytku
+
+## 13.1. Pliki JAR
+
+* Skompresowane pliki zip
+
+Przygotowanie archiwum
+
+```java
+jar cvf CalculatorClasses.jar *.class icon.gif
+```
+
+## 13.1.2. Manifest
+* Musi kończyć się znakiem nowego wiersza
+
+* Nazwa: MANIFEST.MF
+* Zawartość:
+```java
+Manifest-Version: 1.0
+opis całego archiwum
+Name: Woozle.class
+opis jednego pliku
+Name: com/mycompany/mypkg/
+opis pakietu
+```
+
+* Tworzenie archiwum z plikiem manifestu
+```java
+jar cfm MyArchive.jar manifest.mf com/mycompany/mypkg/*.class
+```
+
+## 13.1.3. Wykonywalne pliki JAR
+ * Utowrzenie jar z określeniem klasy startowej
+
+ ```java
+ jar cvfe MyProgram.jar com.mycompany.mypkg.MainAppClass pliki do dodania
+ ```
+
+ * Określenie klasy startowej w manifeście
+ ```java
+ Main-Class: com.mycompany.mypkg.MainAppClass
+ ```
+
+ ## 13.1.5. Pieczętowanie pakietów
+  * Należy dodać do manifestu wpis: Sealed: true przy wybranym pakiecie lub całej aplikacji
+  * Do zapieczętowanego pakietu nie można dodawać klas
+
+## 13.2. Zapisywanie preferencji użytkownika
+
+### 13.2.1. Słowniki własności
+
+* Klucze i wartości są łańcuchami.
+* Można ją łatwo zapisać w pliku i załadować z niego.
+* Istnieje druga tabela przechowująca wartości domyślne.
+
+* Możliwe konfilikty jeśli zainstalujemy kilka aplikacji
+* Nie każdy system posiada katalog główny - problem gdzie przechowywać preferencje
+```java
+Properties settings = new Properties();
+settings.put("width", "200");
+settings.put("title", "Witaj, świecie!");
+
+// Zapisywanie do pliku
+FileOutputStream out = new FileOutputStream("program.properties");
+settings.store(out, "Ustawienia programu");
+
+// Odczytywanie z pliku
+FileInputStream in = new FileInputStream("program.properties");
+settings.load(in);
+
+// Pobranie sciezki do katalogu głównego użytkownika( inne to min. wersja javy, system operacyjny..)
+System.getProperty("user.home");
+
+
+// Pobieranie preferencji z opcjonalną defaultową
+settings.getProperty("title", "Domyślny tytuł");
+
+// Defaultowe preferencje - można przekazać do konstruktora inny obiekt Properties
+Properties settings = new Properties(defaultSettings);
+
+```
+
+## 13.2.2. API Preferences
+ * Tworzy repozytorium w zależnośći od systemu: windows = rejestr, linux = lokalny system plików
+ * Struktura drzewiasta jak przy pakietach
+ * Nie można zapisać obiektów serializowanych ( obejście: tablica bajtów )
+
+ ```java
+ Preferences root = Preferences.userRoot();
+ //lub
+ Preferences root = Preferences.systemRoot();
+
+ // węzeł
+ Preferences node = root.node("/com/mycompany/myapp");
+
+ // Skróty:
+ Preferences node = Preferences.userNodeForPackage(obj.getClass());
+ Preferences node = Preferences.systemNodeForPackage(obj.getClass());
+
+ // Pobieranie preferencji: (Wartość domyślna jest wymagana!)
+ String get(String key, String defval)
+ int getInt(String key, int defval)
+ long getLong(String key, long defval)
+ float getFloat(String key, float defval)
+ double getDouble(String key, double defval)
+ boolean getBoolean(String key, boolean defval)
+ byte[] getByteArray(String key, byte[] defval)
+
+ // Zapisywanie
+ put(String key, String value)
+ putInt(String key, int value)
+
+ // Pobieranie wszystkich kluczy
+ node.keys()
+
+// Importowanie i exportowanie preferencji (xml)
+Preferences.importPreferences(InputStream in);
+ node.exportNode(new FileOutputStream("backup.xml"));
+ ```

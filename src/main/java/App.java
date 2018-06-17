@@ -1,11 +1,14 @@
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.math.BigInteger;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
+import java.util.prefs.Preferences;
 
 
 /**
@@ -40,6 +43,23 @@ public class App {
         //property1=hoho
         prop.load(new FileInputStream(new File("properties_example.txt")));
         System.out.println(prop.getProperty("property1"));
+
+        URL resource = App.class.getResource("Tablice.class");
+
+        System.out.println(resource.getContent());
+
+        System.out.println(System.getProperty("user.home"));
+
+        Preferences node = Preferences.userNodeForPackage(App.class);
+
+//        node.putInt("Name",44);
+//        node.put("Zupa","dupa");
+
+        System.out.println(Arrays.toString(node.keys()));
+
+        System.out.println(node.getInt("Name",55));
+
+        node.exportNode(new FileOutputStream("backup.xml"));
     }
 
 
