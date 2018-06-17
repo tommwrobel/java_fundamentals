@@ -767,6 +767,71 @@ Aby śledzić zużycie zasobów przez program: `jconsole IDprocesu`
 
 # Programowanie generyczne
 
+```java
+// Prosta klasa generyczna
+
+public class Pair<T,U> {
+    private T first;
+    private U second;
+    
+    public T getFirst(){ return first }
+}
+
+// Metoda generyczna
+
+public static <T> getMiddle(T... a){
+    return a.length;
+}
+
+// Ograniczanie zmiennych typowych
+
+public static <T extends Comparable> T min()...
+
+//T musi implementować dany interfejs
+
+// Można dodawać kilka ograniczeń np
+
+public static <T extends Comparable & Serializable> T min()...
+
+// Jeśli wśród typów ograniczających znajduje się klasa to musi znajdować się ona na początku ciągu!
+
+Pair<String> p = (Pair<String>) a; // OSTRZEŻENIE — można tylko sprawdzić, czy a jest typu Pair
+
+Pair<String> stringPair = . . .;
+Pair<Employee> employeePair = . . .;
+if (stringPair.getClass() == employeePair.getClass()) // są równe
+    
+    
+// Nie wolno tworzyć egzemplarzy zmiennych typowych
+
+public Pair() { first = new T(); second = new T(); } // błąd
+    
+// Nie można utworzyć egzemplarza generycznej tablicy
+
+public static <T extends Comparable> T[] minmax(T[] a) { T[] mm = new T[2]; . . . } // błąd    
+
+// Zmiennych typowych nie można używać w statycznych kontekstach klas generycznych
+
+public class Singleton<T>
+{
+    private static T singleInstance; // błąd
+    public static T getSingleInstance() // błąd
+    {
+        if (singleInstance == null) utwórz nowy egzemplarz T
+            return singleInstance;
+    }
+}
+    
+```
+
+## 8.8. Typy wieloznaczne
+
+```
+    public static void printBuddies(Pair<Employee> p)
+    //można zastąpić 
+    public static void printBuddies(Pair<? extends Employee> p)
+    //dzięki temu można przekazać obiekt typu Manager (Manager extends Employee)
+```
 # Kolekcje
 
 ### Interfejs Iterator
@@ -1164,3 +1229,5 @@ Properties settings = new Properties(defaultSettings);
 Preferences.importPreferences(InputStream in);
  node.exportNode(new FileOutputStream("backup.xml"));
  ```
+ 
+# Współbierzeność 
