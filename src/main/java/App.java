@@ -4,6 +4,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.prefs.Preferences;
@@ -28,39 +30,47 @@ public class App {
     }
 
     public static void main(String[] args) throws Exception {
-        Thread t1 = new Thread(()->{
-            throw new ArrayIndexOutOfBoundsException("hehe");
-        });
 
-        t1.start();
+        BlockingQueue<String> elements = new ArrayBlockingQueue<>(5);
 
-        t1.setUncaughtExceptionHandler((t, e) -> {
+        new Thread(() -> {
+            while (true) {
+                System.out.println("Adding element");
 
-        });
+                try {
+                    elements.put(String.valueOf(System.currentTimeMillis()));
+                    System.out.println("Elements: " + elements.size());
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
+        new Thread(() -> {
+            while (true) {
 
-        ReentrantLock myLock = new ReentrantLock();
-        myLock.lock();
-
-        try {
-            // sekcja krytyczna
-        }
-        finally {
-            myLock.unlock(); // Zapewnienie, że blokada zostanie zdjęta, nawet jeśli wystąpi wyjątek.
-        }
+                try {
+                    System.out.println("Taking element:" + elements.take());
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
     }
 
 
 }
 
-abstract class A<E>{
+abstract class A<E> {
     public abstract E getName();
 }
 
 class B extends A<Integer> {
     @Override
-    public Integer getName(){
+    public Integer getName() {
         return 1;
     }
 }

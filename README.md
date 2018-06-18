@@ -81,6 +81,11 @@ int x = (n & 8) / 8; // x = 1 jeśli 4 bit zmiennej n = 1
 0111 >> 1 = 0011 
 
 
+int a = 5;
+
+boolean result = a < 5 & a == 5; // Wykonają się oba porównania a zanim zostanie zwrócony wynik
+boolean result = a < 5 && a == 5; // Wykona się tylko pierwsze porównanie a < 5 i zostanie zwrocony wynik
+
 ```
 
 #### 3.5.9 Typ wyliczeniowy Enum
@@ -140,6 +145,9 @@ Za każdym razem, gdy łączone są znaki, tworzony jest nowy obiekt klasy Strin
 StringBuilder sb = new StringBuilder();
 sb.append("aa");
 String completedString = builder.toString();
+
+// Bezpieczna wątkowo wersja - wolniejsza bo metody są synchronizowane
+StringBuffer sb = new StringBuffer();
 ```
 
 ### 3.7.1. Odbieranie danych wejściowych
@@ -1313,9 +1321,123 @@ Jeśli wątek jest zablokowany przez `sleep` lub 'wait' to zostaje wyrzucony wyj
    
    #### 14.5.4. Warunki
 
+//TODO
+
+#### 14.5.5. Słowo kluczowe synchronized
+
+```java
+public synchronized void metoda()
+{
+    //ciało metody
+}
+
+// Równoważne:
+
+public void metoda()
+{
+    this.intrinsicLock.lock();
+    try
+    {
+        //ciało metody
+    }
+    finally { this.intrinsicLock.unlock(); }
+}
+```
+
+metody `wait(), notify(), notifyAll()` można używać tylko w sekcji synchronized
+
+```java
+
+        Object monitor = new Object();
+
+        new Thread(()->{
+            synchronized (monitor){
+                try {
+                    monitor.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Executed thread 1");
+            }
+        }).start();
+
+
+        new Thread(()->{
+            synchronized (monitor){
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                System.out.println("Executed thread 2");
+                monitor.notifyAll();
+
+            }
+        }).start();
+
+```
+//TODO
+
 ### 14.6. Kolejki blokujące
+
+* Jeśli kolejka jest wykorzystywana jako narzędzie do zarządzania wątkami, należy używać metod put i take.
+* Metody add, remove i element zgłaszają wyjątek, kiedy element jest dodawany do pełnej kolejki lub pobierany z pustej.
+* offer, poll i peek, offer =  false przy dodawaniu jeśli pełna, pool/peek = null jeśli jest pusta
+
+Jeden wątek dodaje elementy do kolejki co 1sec i blokuje wątek kiedy kolejka jest pełna. 2 wątek co 3sec ściąga element z kolejki dzięki czemu pierwszy wątek się odblokowywuje i dodaje kolejny element
+```java
+
+        BlockingQueue<String> elements = new ArrayBlockingQueue<>(5);
+
+        new Thread(() -> {
+            while (true) {
+                System.out.println("Adding element");
+
+                try {
+                    elements.put(String.valueOf(System.currentTimeMillis()));
+                    System.out.println("Elements: " + elements.size());
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (true) {
+
+                try {
+                    System.out.println("Taking element:" + elements.take());
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+```
+
+Implementacje:
+
+* LinkedBlockingQueue - nie posiada określonego rozmiaru ale można go określić
+* LinkedBlockingDeque. - dwustronna wersja LinkedBlockingQueue
+* ArrayBlockingQueue - ma określony rozmiar i moż austwić aby była uczciwa - farowyzuje dłużej czekające wątki
+* PriorityBlockingQueue - elementy usuwane zgodnie z priorytetem (Comparable)
+* DelayQueue - implementuje Delayed. Element usuwany dopiero gdy upłynie czas zwracany przez getDelay
+
 ### 14.7. Kolekcje bezpieczne wątkowo
+
+* ConcurrentHashMap, 
+* ConcurrentSkipListMap, 
+* Concurrent SkipListSet
+* ConcurrentLinkedQueue.
+
+* mappingCount() - rozmiar tablicy jako long
+
 ### 14.8. Interfejsy Callable i Future
 ### 14.9. Klasa Executors
 ### 14.10. Synchronizatory
 ### 14.11. Wątki a biblioteka Swing
+
+
