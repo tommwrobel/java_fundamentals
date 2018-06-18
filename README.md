@@ -5,8 +5,11 @@
 ## 2.2. Używanie narzędzi wiersza poleceń
 
 ```
-javac Welcome.java // kompilacja plików - utowrzy plik Welcome.class
-java Welcome // uruchomienie maszyny wirtualnej i wykonanie kodu bajtowego z pliku Welcome.class
+// kompilacja plików - utowrzy plik Welcome.class
+javac Welcome.java 
+
+// uruchomienie maszyny wirtualnej i wykonanie kodu bajtowego z pliku Welcome.class
+java Welcome
 ```
 
 
@@ -33,9 +36,9 @@ char - (UTF-16) pojedyńczy znak można zapisywać w kodzie 16-nastkowym w zakre
 
 ```
 Systemy liczb i zapis:
-szestnastkowy: 0x..
-ósemkowy: 0..
-dwójkowy: 0b.. / 0B... //java 7+
+szestnastkowy: 0x.. np 0x34
+ósemkowy: 0.. np 023
+dwójkowy: 0b.. / 0B... np 0b01 //java 7+
 ```
 
 #### 3.5.2 Konwersja typów numerycznych
@@ -46,8 +49,8 @@ Strzałki przerywane - konwersja mogąca powodować utratę danych
 
 #### 3.5.5. Operatory inkrementacji i dekrementacji
 
-* ++x - wartość x obliczana jest przed obliczeniem wyrażenia w którym występuje
-* x++ - wartość x obliczona jest po obliczeniu wyrażenia w którym występuje
+* ++x - wartość x obliczana przed obliczeniem wyrażenia w którym występuje
+* x++ - wartość x obliczona po obliczeniu wyrażenia w którym występuje
 
 ```java
 int m = 7;
@@ -64,25 +67,24 @@ Operatory bitowe to:
 * | bitowa alternatywa 
 * ^ lub wykluczające 
 * ~ bitowa negacja
-* >> przesunięcie bitowe w prawo
-* <<
+* \>> przesunięcie bitowe w prawo
+* << przesunięcie bitowe w lewo
 
 Przykłady:
 ```java
+
 // Bitowa koniunkcja
 int x = (n & 8) / 8; // x = 1 jeśli 4 bit zmiennej n = 1
-
 (1010 & 1000) - suma logiczna = 1000 = 8 dziesiętnie
 
 // Przesunięcie bitów w praco
 
 7>>1 // 3
-
 0111 >> 1 = 0011 
-
 
 int a = 5;
 
+// Różnica pomidzy && a &
 boolean result = a < 5 & a == 5; // Wykonają się oba porównania a zanim zostanie zwrócony wynik
 boolean result = a < 5 && a == 5; // Wykona się tylko pierwsze porównanie a < 5 i zostanie zwrocony wynik
 
@@ -93,6 +95,7 @@ boolean result = a < 5 && a == 5; // Wykona się tylko pierwsze porównanie a < 
 * Jest klasą posiadającą określoną liczbę instancji
 * Dziedziczy po Enum
 * Można używać jako argument `switch`
+* Idealny do tworzenia singletonów
 
 ```java
 enum Size {
@@ -108,6 +111,16 @@ enum Size {
         return this.abbrv;
     }
 }
+
+// Przykład singletona
+
+enum SingleObject {
+    INSTANCE;
+    
+    public int getId(){
+        return 1;
+    }
+}
 ```
 
 ```java
@@ -117,10 +130,10 @@ enum Size {
     
 ```
 
-### Lańcuchy
+## 3.6 Lańcuchy - Strings
 
-* Są niemodyfikowalne (immutable)
-* Dwa te same łańcuchy mogą być w rzeczywistości jednym w pamięci (tylko stałe łancuchowe, powstałe w wyniku operacji już nie)
+* Immutable
+* Dwa te same łańcuchy mogą być w rzeczywistości jednym w pamięci (tylko stałe łancuchowe, powstałe w wyniku operacji już nie) tzw. String pool
 * składają się z szeregu znaków Unicode.
 
 ```java
@@ -137,7 +150,7 @@ String join("delimiter", CharSequence... elements) //Zwraca nowy łańcuch będ�
 
 ```
 
-#### 3.6.9. Składanie łańcuchów
+#### 3.6.9. Składanie łańcuchów - Strings
 
 Za każdym razem, gdy łączone są znaki, tworzony jest nowy obiekt klasy String.
 
@@ -165,7 +178,7 @@ String username = cons.readLine("Nazwa użytkownika: ");
 char[] passwd = cons.readPassword("Hasło: ");
 ```
 
-3.7.2. Formatowanie danych wyjściowych
+#### 3.7.2. Formatowanie danych wyjściowych
 
 ```java
 System.out.printf("%d - liczba całkowita dziesiętna", 10); // 10
@@ -302,11 +315,9 @@ Statyczna metoda używana do tworzenie instancji obiektu
  
  W Javie zawsze stosowane są wywołania przez wartość. W przypadku obiektów przekazywana jest kopia referencji do obiektu.
  
- * Metoda nie może zmodyfikować parametru typu podstawowego (czyli będącego
- liczbą lub wartością logiczną).
+* Metoda nie może zmodyfikować parametru typu podstawowego (czyli będącego liczbą lub wartością logiczną).
 * Metoda może zmienić stan obiektu przekazanego jako parametr.
-* Metoda nie może sprawić, aby parametr obiektowy zaczął się odwoływać
- do nowego obiektu. 
+* Metoda nie może sprawić, aby parametr obiektowy zaczął się odwoływać do nowego obiektu. 
  
 ## 4.6.2. Domyślna inicjalizacja pól
 
