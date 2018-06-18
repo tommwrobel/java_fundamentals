@@ -31,33 +31,53 @@ public class App {
 
     public static void main(String[] args) throws Exception {
 
-        BlockingQueue<String> elements = new ArrayBlockingQueue<>(5);
+        // Klasa którą chcemy obserwować - rozszerza Observable
 
-        new Thread(() -> {
-            while (true) {
-                System.out.println("Adding element");
+        class Monitor extends Observable {
+            private int temp = 0;
 
-                try {
-                    elements.put(String.valueOf(System.currentTimeMillis()));
-                    System.out.println("Elements: " + elements.size());
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            public void setTemperature(int temp) {
+                this.temp = temp;
+                // Ustawienie setChanged powoduje że metoda notifyObserers powiadomi wszystkich obserwatorów
+                this.setChanged();
+                this.notifyObservers();
             }
-        }).start();
 
-        new Thread(() -> {
-            while (true) {
-
-                try {
-                    System.out.println("Taking element:" + elements.take());
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            public int getTemp(){
+                return this.temp;
             }
-        }).start();
+        }
+
+        // Klasa której obiekty będą reagowały na zmiany w Monitorze
+
+        class Display implements Observer {
+
+            public void displayTemp(int temp) {
+                System.out.println("Current temp is: " + temp);
+            }
+
+            @Override
+            public void update(Observable o, Object arg) {
+                Monitor m = (Monitor)o;
+                this.displayTemp(m.getTemp());
+            }
+        }
+
+        Monitor monitor = new Monitor();
+
+        Display display1 = new Display();
+        Display display2 = new Display();
+
+
+        // Dodanie obserwatorów do monitora
+        monitor.addObserver(display1);
+        monitor.addObserver(display2);
+
+        monitor.setTemperature(33);
+
+        //Output:
+        // Current temp is: 33
+        // Current temp is: 33
 
     }
 
