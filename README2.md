@@ -75,9 +75,18 @@ Stream.of("a","bb","ccc")
 Stream.of("a", "bb", "ccc")
            .flatMap(CreatingStreams::letters) //letters zwraca Strumień znaków z przekazanego slowa
            .forEach(System.out::println);
-
-
 ```
+
+**java.util.stream.Stream 8**
+* ' Stream<T> filter(Predicate<? super T>' predicate)
+zwraca strumień zawierający elementy tego strumienia spełniające podany warunek.
+* ' <R> Stream<R> map(Function(? super T, ? extends R> mapper)'
+zwraca strumień zawierający wynik, który obejmuje wyniki zwracane przez funkcję
+mapper po przekazaniu do niej elementów tego strumienia.
+* ' <R> Stream<R> flatMap(Function<? super T, ? extends Stream<? extends R>>'
+mapper)
+zwraca strumień utworzony poprzez połączenie wyników zwróconych przez funkcję
+mapper po przekazaniu do niej elementów tego strumienia (Trzeba pamiętać,że każdy z tych wyników jest strumieniem).
 
 ## 1.4. Pobieranie podstrumieni i łączenie strumieni
 
@@ -93,7 +102,7 @@ Stream<String> combined = Stream.concat(letters("Witaj"), letters("świecie"));
 
 ```
 
-java.util.stream.Stream 8
+**java.util.stream.Stream 8**
 * `Stream<T> limit(long maxSize)`
     zwraca strumień, który będzie zawierał co najwyżej maxSize elementów tego
     strumienia.
