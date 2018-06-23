@@ -156,12 +156,94 @@ zwraca true, jeśli dowolny element strumienia lub wszystkie jego elementy speł
 podany predykat albo jeśli nie spełnia go żaden z tych elementów. Są to operacje
 końcowe.  
   
-## 1.7. Typ Optional 
-## 1.7.1. Sposoby posługiwania się wartościami Optional 
-## 1.7.2. Jak nie należy używać wartości opcjonalnych 
-## 1.7.3. Tworzenie obiektów typu Optional 
-## 1.7.4. Łączenie funkcji zwracających wartości opcjonalne przy użyciu flatMap 
-## 1.8. Gromadzenie wyników 
+## 1.7. Typ Optional
+
+```java
+// Tworzenie
+Optional<String> op1 = Optional.of(val); // Używać kiedy val nie może być null
+Optional<String> op2 = Optional.ofNullable(val); // Używać kiedy val może przyjąć wartość null
+Optional<String> op3 = Optional.empty();
+
+// Pobieranie wartości
+
+String val1 = op2.get() // Nie zalecane - rzuca wyjątek jesli nie ma wartości
+String val2 = op2.orElse("bbb") // Zwraca wartość lub 'bbb' jeśli wartości brak
+String val3 = op3.orElseGet(e->"bbb") // To samo co orElse ale funkcja w orElseGet wykonwywana tylko kiedy nie ma wartości. Używać kiedy pobranie alternatywnej wartości jest kosztowne
+
+op2.ifPresent(value -> print(value)) // Wykonuje funkcję dla value jeśli ta istnieje i != null
+op2.filter(value -> value.length() >2) // Filtruje wartośc jeśli istnieje i zwraca ją lub pusty optional
+op2.map(value -> value.toUpperCase()) // Mapuje wartośc optionala jeśli ta istnieje
+
+op2.isPresent() // zwraca boolean mowiący czy wartośc istnieje i != null
+op2.orElseThrow(IOException::new) // wyrzuca wyjątek IOException jeśli wartośc nie istnieje
+
+// jeśli wywołanie s.f() zwróci niepustą wartość, na jej rzecz zostanie wywołana metoda g. W przeciwnym razie zostanie zwrócony pusty obiekt Optional<U>.
+Optional<U> result = s.f.flatMap(T::g);
+
+// Jeśli którakolwiek z metod — inverse lub squareRoot — zwróci wartość Optiona.empty, to także ostateczny wynik będzie pusty.
+Optional<Double> result = Optional.of(-4.0).flatMap(MyMath::inverse).flatMap(MyMath::squareRoot);
+
+```
+## 1.8. Gromadzenie wyników
+
+// Zwrócenie iteratora
+Iterator<String> it = Stream.of("aa").iterator();
+
+// Przejrzenie wszystkich wartości strumienia
+Stream.of("aa").forEach(System.out::println);
+Stream.of("aa").forEachOrdered(System.out::println); // Utrata korzyści z przetwarzania równoległego
+
+**java.util.stream.Stream 8**
+* ` void forEach(Consumer<? super T> action)`
+wywołuje akcję dla każdego elementu strumienia. Jest to operacja kończąca.
+* ` Object[] toArray()`
+* ` <A> A[] toArrary(IntFunction<A[]> generator)`
+zwraca tablicę obiektów bądź tablicę typu A, o ile w wywołaniu zostanie przekazana
+referencja do konstruktora A[]::new.
+* ` <R,A> R collect(Collector<? super T,A,R> collector)`
+zbiera elementy dostępne w tym strumieniu, używając do tego określonego
+kolektora. Klasa Collectors udostępnia metody fabryczne pozwalające na
+stosowanie kolektorów wielu różnych typów.
+
+**java.util.stream.Collectors 8**
+* ` static <T> Collector<T,?,List<T>> toList()`
+* ` static <T> Collector<T,?,Set<T>> toSet()`
+zwraca kolektory gromadzące elementy na liście lub w zbiorze.
+* ` static <T,C extends Collection<T>> Collector<T,?,C>`
+toCollection(Supplier<C> collectionFactory)
+zwraca kolektor gromadzący elementy w kolekcji dowolnego typu. W wywołaniu
+należy przekazać referencję do konstruktora, taką jak TreeSet::new.
+* ` static Collector<CharSequence,?,String> joining()`
+* ` static Collector<CharSequence,?,String> joining(CharSequence delimiter)`
+* ` static Collector<CharSequence,?,String> joining(CharSequence delimiter,CharSequence prefix, CharSequence suffix)`
+zwraca kolektor wykonujący konkatenację łańcuchów znaków. Pomiędzy elementami
+może być umieszczany separator, istnieje także możliwość określenia prefiksu
+i końcówki dodawanych do łańcucha wynikowego. W przypadku pominięcia tych
+dodatkowych elementów będą one puste.
+* ` static <T> Collector<T,?,IntSummaryStatistics> summarizingInt(ToIntFunction<? super T> mapper)`
+* ` static<T> Collector<T,?,LongSummaryStatistics>`
+summarizingLong(ToLongFunction<? superT> mapper)
+* ` static <T> Collector<T,?,DoubleSummaryStatistics>`
+summarizingDouble(ToDoubleFunction<? super T> mapper)
+zwraca kolektor generujący obiekt (Int|Long|Double)SummaryStatistic, z którego
+można pobrać sumę elementów strumienia, ich liczbę, wartość maksymalną
+i minimalną, uzyskane po zastosowaniu do każdego elementu strumienia funkcji
+mapper.
+
+**IntSummaryStatistics 8**
+**LongSummaryStatistics 8**
+**DoubleSummaryStatistics 8**
+* ` long getCount()`
+zwraca liczbę przetworzonych elementów.
+* ` (int|long|double) getSum()`
+* ` double getAverage()`
+zwraca sumę lub średnią przetworzonych elementów bądź 0, jeśli nie zostały
+przetworzone żadne elementy.
+* ` (int|long|double) getMax()`
+* ` (int|long|double) getMin()`
+zwraca wartość maksymalną lub minimalną przetworzonych elementów. W razie
+braku elementów zwracana jest wartość (Integer|Long|Double).(MAX|MIN)_VALUE.
+
 ## 1.9. Gromadzenie wyników w mapach 
 ## 1.10. Grupowanie i podział 
 ## 1.11. Kolektory przetwarzające 
