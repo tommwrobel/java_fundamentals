@@ -94,13 +94,13 @@ Stream<String> combined = Stream.concat(letters("Witaj"), letters("świecie"));
 ```
 
 java.util.stream.Stream 8
-* Stream<T> limit(long maxSize)
+* `Stream<T> limit(long maxSize)`
     zwraca strumień, który będzie zawierał co najwyżej maxSize elementów tego
     strumienia.
-* Stream<T> skip(long n)
+* `Stream<T> skip(long n)`
     zwraca strumień, w którym zostało pominiętych n pierwszych elementów tego
     strumienia.
-* static <T> Stream<T> concat(Stream<? extends T> a, Stream<? extends T>b)
+* `static <T> Stream<T>` concat(Stream<? extends T> a, Stream<? extends T>b)
     zwraca strumień, którego
 
 ## 1.5. Inne przekształcenia strumieni 
