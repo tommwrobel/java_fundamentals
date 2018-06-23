@@ -1,56 +1,21 @@
-# Wzorce projektowe
 
-## Observer - obserwator
+# Rozdział 1. Biblioteka strumieni Java SE 8
+## 1.1. Od iteracji do operacji na strumieniach
 
-Definiuje między obiektami relację jeden do wielu w taki sposób, że kiedy wybrany obiekt zmienia swój stan, to wszystkie jego obiekty zależne zostają o tym powiadomione i automatycznie zaktualizowane.
-
-**Przykładowa implementacja:**
-```java
-        // Klasa którą chcemy obserwować - rozszerza Observable
-
-        class Monitor extends Observable {
-            private int temp = 0;
-
-            public void setTemperature(int temp) {
-                this.temp = temp;
-                // Ustawienie setChanged powoduje że metoda notifyObserers powiadomi wszystkich obserwatorów
-                this.setChanged();
-                this.notifyObservers();
-            }
-
-            public int getTemp(){
-                return this.temp;
-            }
-        }
-
-        // Klasa której obiekty będą reagowały na zmiany w Monitorze
-        
-        class Display implements Observer {
-
-            public void displayTemp(int temp) {
-                System.out.println("Current temp is: " + temp);
-            }
-
-            @Override
-            public void update(Observable o, Object arg) {
-                Monitor m = (Monitor)o;
-                this.displayTemp(m.getTemp());
-            }
-        }
-
-        Monitor monitor = new Monitor();
-
-        Display display1 = new Display();
-        Display display2 = new Display();
-
-        
-        // Dodanie obserwatorów do monitora
-        monitor.addObserver(display1);
-        monitor.addObserver(display2);
-
-        monitor.setTemperature(33);
-
-        //Output:
-        // Current temp is: 33
-        // Current temp is: 33
-```
+## 1.2. Tworzenie strumieni
+## 1.3. Metody filter, map oraz flatMap
+## 1.4. Pobieranie podstrumieni i łączenie strumieni
+## 1.5. Inne przekształcenia strumieni
+## 1.6. Proste operacje redukcji
+## 1.7. Typ Optional
+## 1.7.1. Sposoby posługiwania się wartościami Optional
+## 1.7.2. Jak nie należy używać wartości opcjonalnych
+## 1.7.3. Tworzenie obiektów typu Optional
+## 1.7.4. Łączenie funkcji zwracających wartości opcjonalne przy użyciu flatMap
+## 1.8. Gromadzenie wyników
+## 1.9. Gromadzenie wyników w mapach
+## 1.10. Grupowanie i podział
+## 1.11. Kolektory przetwarzające
+## 1.12. Operacje redukcji
+## 1.13. Strumienie danych typów prostych
+## 1.14. Strumienie równoległe
