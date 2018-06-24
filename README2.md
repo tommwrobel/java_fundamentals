@@ -244,9 +244,98 @@ przetworzone żadne elementy.
 zwraca wartość maksymalną lub minimalną przetworzonych elementów. W razie
 braku elementów zwracana jest wartość (Integer|Long|Double).(MAX|MIN)_VALUE.
 
-## 1.9. Gromadzenie wyników w mapach 
-## 1.10. Grupowanie i podział 
-## 1.11. Kolektory przetwarzające 
-## 1.12. Operacje redukcji 
-## 1.13. Strumienie danych typów prostych 
-## 1.14. Strumienie równoległe 
+## 1.9. Gromadzenie wyników w mapach
+
+```java
+List<User> users = new ArrayList<User>() {{
+    add(new User("kamil"));
+    add(new User("ania"));
+    add(new User("tomek"));
+    add(new User("kamil"));
+}};
+
+// Mapa user.id -> user (HashMap)
+Map<Integer, User> usersMap = users.stream().collect(Collectors.toMap(
+         User::getId, // Klucz
+         e -> e, // Wartość
+         (oldK, newK) -> newK, // Rozwiązanie konfliktu kluczy [opcjonalny].
+         TreeMap::new)); // Typ wynikowej mapy [opcjonalny] default: HashMap / ConcurrentHashMap
+
+// Jeśli podczas operacji pojawią się 2 takie same klucze to sotanie wyrzucony IllegalStateException,
+// chyba, że rozwiążemy konflikt przy użyciu 3 parametru
+
+// Istnieją też collectory toConcurrentMap
+```
+
+## 1.10. Grupowanie i podział
+
+```java
+Map<String, List<User>> usersMap2 = users.stream()
+         .collect(Collectors.groupingBy(User::getName));
+
+// Grupuje userów po ich imionach. Pod kluczem ania będzie lista zawierająca jednego usera o iminiu ania
+// natomiast pod kluczem kamil będzie lista z 2 userami o imieniu kamil
+
+```
+
+## 1.11. Kolektory przetwarzające
+
+// Wartościami mogą też być inne elementy niż lista - tutaj ilość elementów
+ Map<String, Long> usersMap2 = users.stream()
+         .collect(Collectors.groupingBy(User::getName, Collectors.counting()));
+
+// Inne możliwe wartości to:
+//  - toSet() - wartośść będzie setem
+//  - summing - wartością będzie suma wartości elementów listy np summintInt(User::getId)
+//  - maxBy(Comparator.comparing(City::getPopulation))) i minBy - wartością będzie wartość max / min
+
+## 1.12. Operacje redukcji
+
+Redukcja strumienia do jednej wartości opakowanej w Optional
+
+```java
+// Redukuje listę userów do jednej wartości zawierającej sumę długości imion wszystkich userów
+// W operacji redukcji nie powinna mieć znaczenia kolejność redukowania
+
+ Optional<Integer> names = users.stream()
+         .map(u -> u.getName().length())
+         .reduce(Integer::sum); //  .reduce((x, y) -> x + y);
+
+ names.ifPresent(System.out::println);
+ 
+ // Alternatywnie to samo można osiągnąć używająć IntStream:
+ 
+ int names2 = users.stream()
+          .mapToInt(u -> u.getName().length())
+          .sum();
+```
+
+## 1.13. Strumienie danych typów prostych
+
+Umoliwiają tworzenie strumieniu typów prostych bez konieczności opakowywania ich co znacząco zwiększa wydajność przetwarzania tych strumieni
+
+```java
+
+IntStream stream = IntStream.of(1, 1, 2, 3, 5);
+stream = Arrays.stream(values, from, to); // wartości są zapisane w tablicy int[]
+
+IntStream zeroToNinetyNine = IntStream.range(0, 100); // górna granica nie jest dołączana do zakresu
+IntStream zeroToHundred = IntStream.rangeClosed(0, 100); // górna granica jest dołączana
+
+// Przekształcenie strumienia obiektów na strumień typów prostych:
+IntStream lengths = words.mapToInt(String::length);
+
+// I w drugą stronę: Strumień typów prosty na strumień obiektów:
+Stream<Integer> integers = IntStream.range(0, 100).boxed();
+```
+
+## 1.14. Strumienie równoległe
+
+//TODO
+
+Operacje w strumieniach równoległych wykonywane są jednocześnie w kilku watkach - należ uważać aby nie doprowadzić do wyścigu gdzie w strumieniu modyfikujemy jakąś wartość z poza strumienia
+
+`Stream<String> parallelWords = words.parallelStream();`
+
+`Stream<String> parallelWords = Stream.of(wordArray).parallel();`
+
