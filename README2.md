@@ -339,3 +339,12 @@ Operacje w strumieniach równoległych wykonywane są jednocześnie w kilku watk
 
 `Stream<String> parallelWords = Stream.of(wordArray).parallel();`
 
+# 2. Wejście wyjście
+
+##  2.1. Strumienie wejścia-wyjścia.
+##  2.2. Strumienie tekstowe.
+##  2.3. Odczyt i zapis danych binarnych.
+##  2.4. Strumienie obiektów i serializacja.
+##  2.5. Zarządzanie plikami.
+##  2.6. Pliki mapowane w pamięci.
+##  2.7. Wyrażenia regularne.
